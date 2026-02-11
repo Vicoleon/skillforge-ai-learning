@@ -84,6 +84,9 @@ def stats_summary() -> rx.Component:
     )
 
 
+from app.states.i18n import I18nState
+
+
 def course_header() -> rx.Component:
     return rx.el.div(
         stats_summary(),
@@ -105,11 +108,17 @@ def course_header() -> rx.Component:
         rx.el.div(
             rx.el.div(
                 rx.el.span(
-                    "Course Progress",
+                    I18nState.translations[I18nState.current_language][
+                        "course.progress"
+                    ],
                     class_name="text-xs font-bold text-slate-500 uppercase tracking-widest",
                 ),
                 rx.el.p(
-                    f"{CourseState.completed_count} of {CourseState.total_count} Modules Completed",
+                    I18nState.translations[I18nState.current_language][
+                        "course.modules_completed"
+                    ]
+                    .replace("{completed}", CourseState.completed_count.to_string())
+                    .replace("{total}", CourseState.total_count.to_string()),
                     class_name="text-sm text-indigo-400 font-medium",
                 ),
                 class_name="flex flex-col",
@@ -136,7 +145,24 @@ def module_card(module: dict) -> rx.Component:
                     rx.icon("heading_4", class_name="h-6 w-6 text-indigo-500"),
                 ),
                 rx.el.span(
-                    status.upper(),
+                    rx.match(
+                        status,
+                        (
+                            "completed",
+                            I18nState.translations[I18nState.current_language][
+                                "course.completed"
+                            ],
+                        ),
+                        (
+                            "locked",
+                            I18nState.translations[I18nState.current_language][
+                                "course.locked"
+                            ],
+                        ),
+                        I18nState.translations[I18nState.current_language][
+                            "course.active"
+                        ],
+                    ),
                     class_name=rx.match(
                         status,
                         (
@@ -172,9 +198,21 @@ def module_card(module: dict) -> rx.Component:
             rx.el.button(
                 rx.match(
                     status,
-                    ("completed", "Review Module"),
-                    ("locked", "Locked"),
-                    "Start Learning",
+                    (
+                        "completed",
+                        I18nState.translations[I18nState.current_language][
+                            "course.review_module"
+                        ],
+                    ),
+                    (
+                        "locked",
+                        I18nState.translations[I18nState.current_language][
+                            "course.locked"
+                        ],
+                    ),
+                    I18nState.translations[I18nState.current_language][
+                        "course.start_learning"
+                    ],
                 ),
                 on_click=lambda: CourseState.action_module(module["id"], status),
                 class_name=rx.match(
