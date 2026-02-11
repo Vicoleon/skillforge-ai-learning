@@ -120,6 +120,9 @@ class DiagnosticState(rx.State):
                 "recommended_focus", "Start learning basics."
             )
             self.is_complete = True
+            from app.states.auth import AuthState
+
+            yield AuthState.save_user_progress
         except Exception as e:
             logging.exception("Error completing diagnostic")
             yield rx.toast("Error analyzing results.")
