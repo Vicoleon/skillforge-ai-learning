@@ -415,6 +415,11 @@ if __name__ == "__main__":
 
     @rx.event
     def set_active_tab(self, tab: str):
+        if self.topic_type == "language":
+            if tab in ["terminal", "editor"]:
+                return
+        elif tab in ["practice", "flashcards"]:
+            return
         self.active_tab = tab
 
     @rx.event
