@@ -32,6 +32,7 @@ class UserAnswer(TypedDict):
 
 class DiagnosticState(rx.State):
     topic: str = ""
+    target_level: str = "Beginner"
     questions: list[DiagnosticQuestion] = []
     current_question_index: int = 0
     user_answers: list[UserAnswer] = []
@@ -138,15 +139,16 @@ class DiagnosticState(rx.State):
                 "recommended_focus": self.recommended_focus,
             }
             i18n = await self.get_state(I18nState)
-            modules = await generate_adaptive_curriculum(
-                self.topic, analysis_data, i18n.current_language
-            )
             from app.states.courses import CourseState
             from app.states.navigation import NavState
 
             courses = await self.get_state(CourseState)
+            courses.advance_to_next_level()
+            modules = await generate_adaptive_curriculum(
+                self.topic, analysis_data, i18n.current_language, courses.current_level
+            )
             courses.course_topic = self.topic
-            courses.course_title = f"Adaptive {self.topic} Mastery"
+            courses.course_title = f"{courses.current_level} {self.topic} Mastery"
             courses.course_description = self.recommended_focus
             if modules:
                 courses.modules = modules
@@ -155,5 +157,27 @@ class DiagnosticState(rx.State):
         except Exception as e:
             logging.exception("Error generating path")
             yield rx.toast("Failed to generate curriculum.")
+        finally:
+            self.is_loading = False
+
+    @rx.event
+    async def start_level_up_diagnostic(
+        self, topic: str, current_level: str, target_level: str, language: str = "en"
+    ):
+        self.topic = topic
+        self.target_level = target_level
+        self.is_loading = True
+        self.questions = []
+        self.user_answers = []
+        self.current_question_index = 0
+        self.is_complete = False
+        yield
+        try:
+            self.questions = await generate_diagnostic_questions(
+                topic, language, current_level, target_level
+            )
+        except Exception as e:
+            logging.exception("Failed to start level up diagnostic")
+            yield rx.toast("Error generating assessment.")
         finally:
             self.is_loading = False
