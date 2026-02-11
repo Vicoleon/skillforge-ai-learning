@@ -324,7 +324,7 @@ if __name__ == "__main__":
                 ):
                     yield update
             else:
-                yield rx.toast("Course completed! Congratulations!", duration=5000)
+                courses.check_course_completion()
                 from app.states.navigation import NavState
 
                 nav = await self.get_state(NavState)
