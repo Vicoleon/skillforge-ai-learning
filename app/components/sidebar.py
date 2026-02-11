@@ -1,6 +1,7 @@
 import reflex as rx
 from app.states.navigation import NavState
 from app.states.review import ReviewState
+from app.states.i18n import I18nState
 
 
 def nav_item(item: dict[str, str]) -> rx.Component:
@@ -12,7 +13,41 @@ def nav_item(item: dict[str, str]) -> rx.Component:
                 class_name=rx.cond(is_active, "text-indigo-400", "text-slate-400")
                 + " h-5 w-5",
             ),
-            rx.el.span(item["label"], class_name="font-medium"),
+            rx.el.span(
+                rx.match(
+                    item["id"],
+                    (
+                        "home",
+                        I18nState.translations[I18nState.current_language][
+                            "nav.explore"
+                        ],
+                    ),
+                    (
+                        "courses",
+                        I18nState.translations[I18nState.current_language][
+                            "nav.courses"
+                        ],
+                    ),
+                    (
+                        "lab",
+                        I18nState.translations[I18nState.current_language]["nav.lab"],
+                    ),
+                    (
+                        "reviews",
+                        I18nState.translations[I18nState.current_language][
+                            "nav.reviews"
+                        ],
+                    ),
+                    (
+                        "settings",
+                        I18nState.translations[I18nState.current_language][
+                            "nav.settings"
+                        ],
+                    ),
+                    item["label"],
+                ),
+                class_name="font-medium",
+            ),
             class_name="flex items-center gap-3",
         ),
         rx.cond(
@@ -39,18 +74,30 @@ def sidebar() -> rx.Component:
         rx.el.div(
             rx.el.div(
                 rx.el.div(
-                    rx.icon("zap", class_name="text-indigo-500 h-6 w-6"),
-                    class_name="bg-indigo-500/10 p-2 rounded-lg",
+                    rx.el.div(
+                        rx.icon("zap", class_name="text-indigo-500 h-6 w-6"),
+                        class_name="bg-indigo-500/10 p-2 rounded-lg",
+                    ),
+                    rx.el.h1(
+                        "SkillForge",
+                        class_name="text-xl font-bold tracking-tight text-white",
+                    ),
+                    class_name="flex items-center gap-3 px-2",
                 ),
-                rx.el.h1(
-                    "SkillForge",
-                    class_name="text-xl font-bold tracking-tight text-white",
+                rx.el.button(
+                    rx.el.span(I18nState.current_flag, class_name="text-xl"),
+                    on_click=rx.cond(
+                        I18nState.current_language == "en",
+                        I18nState.set_language("es"),
+                        I18nState.set_language("en"),
+                    ),
+                    class_name="p-2 hover:bg-slate-800 rounded-xl transition-all border border-slate-800",
                 ),
-                class_name="flex items-center gap-3 px-2 mb-10",
+                class_name="flex items-center justify-between mb-10 p-2",
             ),
             rx.el.div(
                 rx.el.p(
-                    "MENU",
+                    I18nState.translations[I18nState.current_language]["nav.menu"],
                     class_name="text-[10px] font-bold text-slate-500 tracking-widest mb-4 px-4",
                 ),
                 rx.el.nav(
