@@ -1,6 +1,7 @@
 import reflex as rx
 from typing import Optional
 from app.services.ai_generator import generate_course_curriculum
+from app.states.i18n import I18nState
 import logging
 
 
@@ -40,7 +41,8 @@ class OnboardingState(rx.State):
         from app.states.diagnostic import DiagnosticState
 
         diagnostic = await self.get_state(DiagnosticState)
-        yield DiagnosticState.start_diagnostic(self.search_query)
+        i18n = await self.get_state(I18nState)
+        yield DiagnosticState.start_diagnostic(self.search_query, i18n.current_language)
         nav = await self.get_state(NavState)
         nav.current_page = "diagnostic"
         self.is_processing = False
