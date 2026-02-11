@@ -1,5 +1,6 @@
 import reflex as rx
 from app.states.onboarding import OnboardingState
+from app.states.i18n import I18nState
 
 
 def diagnostic_chat() -> rx.Component:
@@ -11,7 +12,9 @@ def diagnostic_chat() -> rx.Component:
             ),
             rx.el.div(
                 rx.el.p(
-                    f"Great! Let's get you started with {OnboardingState.search_query}. To personalize your learning path, how much experience do you have with this topic?",
+                    I18nState.translations[I18nState.current_language][
+                        "onboarding.skill_question"
+                    ],
                     class_name="text-slate-200 text-sm leading-relaxed",
                 ),
                 class_name="bg-slate-800 border border-slate-700 p-4 rounded-2xl rounded-tl-none max-w-md shadow-xl",
@@ -20,7 +23,9 @@ def diagnostic_chat() -> rx.Component:
         ),
         rx.el.div(
             rx.el.button(
-                "Beginner",
+                I18nState.translations[I18nState.current_language][
+                    "onboarding.beginner"
+                ],
                 on_click=lambda: OnboardingState.select_skill("Beginner"),
                 class_name=rx.cond(
                     OnboardingState.skill_level == "Beginner",
@@ -29,7 +34,9 @@ def diagnostic_chat() -> rx.Component:
                 ),
             ),
             rx.el.button(
-                "Intermediate",
+                I18nState.translations[I18nState.current_language][
+                    "onboarding.intermediate"
+                ],
                 on_click=lambda: OnboardingState.select_skill("Intermediate"),
                 class_name=rx.cond(
                     OnboardingState.skill_level == "Intermediate",
@@ -38,7 +45,9 @@ def diagnostic_chat() -> rx.Component:
                 ),
             ),
             rx.el.button(
-                "Advanced",
+                I18nState.translations[I18nState.current_language][
+                    "onboarding.advanced"
+                ],
                 on_click=lambda: OnboardingState.select_skill("Advanced"),
                 class_name=rx.cond(
                     OnboardingState.skill_level == "Advanced",
@@ -57,7 +66,9 @@ def onboarding_view() -> rx.Component:
         rx.el.div(
             rx.el.div(
                 rx.el.h2(
-                    "What do you want to learn today?",
+                    I18nState.translations[I18nState.current_language][
+                        "onboarding.title"
+                    ],
                     class_name="text-4xl md:text-5xl font-bold text-white mb-8 text-center tracking-tight",
                 ),
                 rx.el.form(
@@ -69,7 +80,9 @@ def onboarding_view() -> rx.Component:
                             ),
                             rx.el.input(
                                 name="search_query",
-                                placeholder="Master Rust, learn Neural Networks, or explore AWS...",
+                                placeholder=I18nState.translations[
+                                    I18nState.current_language
+                                ]["onboarding.placeholder"],
                                 class_name="w-full bg-slate-800/50 border border-slate-700 text-white py-5 pl-16 pr-6 rounded-3xl focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 outline-none transition-all placeholder:text-slate-500 text-lg shadow-2xl",
                                 default_value=OnboardingState.search_query,
                                 key=OnboardingState.search_query,
@@ -112,12 +125,15 @@ def onboarding_view() -> rx.Component:
                         class_name="h-12 w-12 text-indigo-500 animate-spin mb-4",
                     ),
                     rx.el.h3(
-                        "Preparing your diagnostic assessment...",
+                        I18nState.translations[I18nState.current_language][
+                            "onboarding.preparing"
+                        ],
                         class_name="text-xl font-semibold text-white animate-pulse",
                     ),
                     rx.el.p(
-                        "We are generating questions to test your knowledge of "
-                        + OnboardingState.search_query,
+                        I18nState.translations[I18nState.current_language][
+                            "onboarding.generating_questions"
+                        ].replace("{topic}", OnboardingState.search_query),
                         class_name="text-slate-500 mt-2",
                     ),
                     class_name="flex flex-col items-center justify-center mt-12 animate-in fade-in duration-500",
