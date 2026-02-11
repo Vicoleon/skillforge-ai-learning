@@ -245,8 +245,75 @@ def module_card(module: dict) -> rx.Component:
     )
 
 
+def level_up_modal() -> rx.Component:
+    return rx.el.div(
+        rx.el.div(
+            rx.el.div(
+                rx.el.span("🎉", class_name="text-6xl mb-6 block animate-bounce"),
+                rx.el.h2(
+                    I18nState.translations[I18nState.current_language][
+                        "course.level_complete"
+                    ]
+                    .replace("{level}", CourseState.current_level)
+                    .replace("{topic}", CourseState.course_topic),
+                    class_name="text-2xl font-bold text-white mb-2",
+                ),
+                rx.el.p(
+                    I18nState.translations[I18nState.current_language][
+                        "course.ready_advance"
+                    ].replace("{next_level}", CourseState.next_level_label),
+                    class_name="text-slate-400 mb-8",
+                ),
+                rx.el.div(
+                    rx.el.div(
+                        rx.el.p(
+                            "Modules Completed",
+                            class_name="text-xs text-slate-500 uppercase font-bold",
+                        ),
+                        rx.el.p(
+                            CourseState.total_count.to_string(),
+                            class_name="text-xl font-bold text-indigo-400",
+                        ),
+                        class_name="flex-1 p-4 bg-slate-800 rounded-2xl",
+                    ),
+                    rx.el.div(
+                        rx.el.p(
+                            "XP Earned",
+                            class_name="text-xs text-slate-500 uppercase font-bold",
+                        ),
+                        rx.el.p("300", class_name="text-xl font-bold text-emerald-400"),
+                        class_name="flex-1 p-4 bg-slate-800 rounded-2xl",
+                    ),
+                    class_name="flex gap-4 w-full mb-8",
+                ),
+                rx.el.div(
+                    rx.el.button(
+                        I18nState.translations[I18nState.current_language][
+                            "course.take_assessment"
+                        ],
+                        on_click=CourseState.start_level_up,
+                        class_name="w-full py-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl font-bold transition-all shadow-lg shadow-indigo-600/20 mb-3",
+                    ),
+                    rx.el.button(
+                        I18nState.translations[I18nState.current_language][
+                            "course.stay_current"
+                        ],
+                        on_click=CourseState.set_show_level_up_modal(False),
+                        class_name="w-full py-4 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-2xl font-semibold transition-all",
+                    ),
+                    class_name="w-full",
+                ),
+                class_name="flex flex-col items-center text-center",
+            ),
+            class_name="bg-slate-900 border border-slate-700 p-10 rounded-[2.5rem] shadow-2xl max-w-md w-full relative overflow-hidden",
+        ),
+        class_name="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300",
+    )
+
+
 def course_view() -> rx.Component:
     return rx.el.div(
+        rx.cond(CourseState.show_level_up_modal, level_up_modal()),
         course_header(),
         rx.el.div(
             rx.foreach(CourseState.modules, module_card),
