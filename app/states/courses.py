@@ -124,7 +124,7 @@ class CourseState(rx.State):
                 yield update
 
     @rx.event
-    def mark_module_completed(self, module_id: str):
+    async def mark_module_completed(self, module_id: str):
         for i, module in enumerate(self.modules):
             if module["id"] == module_id:
                 self.modules[i]["status"] = "completed"
@@ -133,6 +133,10 @@ class CourseState(rx.State):
                     if self.modules[i + 1]["status"] == "locked":
                         self.modules[i + 1]["status"] = "active"
                 break
+        from app.states.auth import AuthState
+
+        auth = await self.get_state(AuthState)
+        yield AuthState.save_user_progress
 
     @rx.event
     def check_course_completion(self):
