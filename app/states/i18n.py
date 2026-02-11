@@ -75,6 +75,10 @@ class I18nState(rx.State):
             "diagnostic.focus_areas": "Focus Areas",
             "diagnostic.recommendation": "Our Recommendation",
             "diagnostic.generate": "Generate Personalized Course",
+            "course.level_complete": "Congratulations! You've mastered {level} {topic}!",
+            "course.ready_advance": "Ready to advance to {next_level}?",
+            "course.take_assessment": "Take Advancement Assessment",
+            "course.stay_current": "Stay at Current Level",
         },
         "es": {
             "nav.explore": "Explorar",
@@ -143,6 +147,10 @@ class I18nState(rx.State):
             "diagnostic.focus_areas": "Áreas de Enfoque",
             "diagnostic.recommendation": "Nuestra Recomendación",
             "diagnostic.generate": "Generar Curso Personalizado",
+            "course.level_complete": "¡Felicidades! Has dominado el nivel {level} {topic}!",
+            "course.ready_advance": "¿Listo para avanzar a {next_level}?",
+            "course.take_assessment": "Tomar Evaluación de Avance",
+            "course.stay_current": "Quedarme en el Nivel Actual",
         },
     }
 
