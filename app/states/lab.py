@@ -145,6 +145,82 @@ if __name__ == "__main__":
                 return "programming"
         return "general"
 
+    def _normalize_exercises(self, raw_exercises: list) -> list[Exercise]:
+        normalized = []
+        for i, ex in enumerate(raw_exercises):
+            prompt = (
+                ex.get("prompt")
+                or ex.get("question")
+                or ex.get("instruction")
+                or ex.get("task")
+                or "Practice Task"
+            )
+            expected = (
+                ex.get("expected_answer")
+                or ex.get("answer")
+                or ex.get("solution")
+                or ""
+            )
+            normalized.append(
+                {
+                    "id": str(ex.get("id") or f"e{i}"),
+                    "prompt": prompt,
+                    "expected_answer": expected,
+                }
+            )
+        return normalized
+
+    def _normalize_flashcards(self, raw_flashcards: list) -> list[Flashcard]:
+        normalized = []
+        for i, card in enumerate(raw_flashcards):
+            front = (
+                card.get("front") or card.get("term") or card.get("question") or "Term"
+            )
+            back = (
+                card.get("back")
+                or card.get("definition")
+                or card.get("answer")
+                or "Definition"
+            )
+            normalized.append(
+                {"id": str(card.get("id") or f"f{i}"), "front": front, "back": back}
+            )
+        return normalized
+
+    def _normalize_quiz_questions(self, raw_questions: list) -> list[QuizQuestion]:
+        normalized = []
+        for i, q in enumerate(raw_questions):
+            question_text = q.get("question") or "Question text missing"
+            difficulty = q.get("difficulty") or "medium"
+            explanation = q.get("explanation") or ""
+            raw_options = q.get("options", [])
+            clean_options = []
+            if raw_options and isinstance(raw_options[0], str):
+                for idx, opt_text in enumerate(raw_options):
+                    opt_id = chr(97 + idx)
+                    clean_options.append({"id": opt_id, "text": opt_text})
+            else:
+                for opt in raw_options:
+                    clean_options.append(
+                        {
+                            "id": str(opt.get("id", "")).lower(),
+                            "text": opt.get("text", ""),
+                        }
+                    )
+            correct_id = str(q.get("correct_id") or q.get("answer") or "").lower()
+            if not correct_id and clean_options:
+                correct_id = clean_options[0]["id"]
+            normalized.append(
+                {
+                    "question": question_text,
+                    "options": clean_options,
+                    "correct_id": correct_id,
+                    "difficulty": difficulty,
+                    "explanation": explanation,
+                }
+            )
+        return normalized
+
     @rx.event
     async def load_module_content(self, topic: str, module_title: str, module_id: str):
         self.is_loading = True
@@ -160,17 +236,24 @@ if __name__ == "__main__":
             generated_data = await generate_module_content(
                 topic, module_title, i18n.current_language
             )
+            exercises = self._normalize_exercises(generated_data.get("exercises", []))
+            flashcards = self._normalize_flashcards(
+                generated_data.get("flashcards", [])
+            )
+            quiz_questions = self._normalize_quiz_questions(
+                generated_data.get("quiz_questions", [])
+            )
             self.current_module_data = {
                 "id": module_id,
                 "title": module_title,
-                "content": generated_data["content"],
-                "exercises": generated_data["exercises"],
-                "flashcards": generated_data["flashcards"],
-                "quiz_questions": generated_data["quiz_questions"],
+                "content": generated_data.get("content", "### Content not available."),
+                "exercises": exercises,
+                "flashcards": flashcards,
+                "quiz_questions": quiz_questions,
             }
             self.current_code = ""
-            if generated_data["exercises"]:
-                self.current_code = generated_data["exercises"][0]["prompt"]
+            if exercises:
+                self.current_code = exercises[0]["prompt"]
             self.active_tab = "practice" if self.topic_type == "language" else "editor"
             self.is_feedback_visible = False
             self.selected_quiz_answer = ""
