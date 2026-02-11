@@ -5,6 +5,7 @@ from app.services.diagnostic_generator import (
     analyze_diagnostic_results,
     generate_adaptive_curriculum,
 )
+from app.states.i18n import I18nState
 import logging
 
 
@@ -67,7 +68,7 @@ class DiagnosticState(rx.State):
         return len(self.questions)
 
     @rx.event
-    async def start_diagnostic(self, topic: str):
+    async def start_diagnostic(self, topic: str, language: str = "en"):
         self.topic = topic
         self.is_loading = True
         self.questions = []
@@ -76,7 +77,7 @@ class DiagnosticState(rx.State):
         self.is_complete = False
         yield
         try:
-            self.questions = await generate_diagnostic_questions(topic)
+            self.questions = await generate_diagnostic_questions(topic, language)
         except Exception as e:
             logging.exception("Failed to start diagnostic")
             yield rx.toast("Error generating diagnostic questions.")
@@ -106,8 +107,9 @@ class DiagnosticState(rx.State):
         self.is_loading = True
         yield
         try:
+            i18n = await self.get_state(I18nState)
             results = await analyze_diagnostic_results(
-                self.questions, self.user_answers
+                self.questions, self.user_answers, i18n.current_language
             )
             self.overall_score = results.get("overall_score", 0)
             self.proficiency_level = results.get("proficiency_level", "Beginner")
@@ -135,7 +137,10 @@ class DiagnosticState(rx.State):
                 "weaknesses": self.weaknesses,
                 "recommended_focus": self.recommended_focus,
             }
-            modules = await generate_adaptive_curriculum(self.topic, analysis_data)
+            i18n = await self.get_state(I18nState)
+            modules = await generate_adaptive_curriculum(
+                self.topic, analysis_data, i18n.current_language
+            )
             from app.states.courses import CourseState
             from app.states.navigation import NavState
 
