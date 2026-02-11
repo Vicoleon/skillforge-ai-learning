@@ -1,6 +1,7 @@
 import reflex as rx
 from typing import TypedDict
 from app.services.tutor_generator import generate_tutor_response
+from app.states.i18n import I18nState
 import asyncio
 
 
@@ -58,6 +59,7 @@ class TutorState(rx.State):
         course_state = await self.get_state(CourseState)
         lab_state = await self.get_state(LabState)
         diag_state = await self.get_state(DiagnosticState)
+        i18n = await self.get_state(I18nState)
         context = {
             "topic": course_state.course_topic,
             "module_title": lab_state.current_module["title"],
@@ -67,7 +69,7 @@ class TutorState(rx.State):
             "quiz_performance": f"Correct: {lab_state.quiz_performance['correct']}, Total: {lab_state.quiz_performance['total']}",
         }
         response_text = await generate_tutor_response(
-            user_msg, context, self.explanation_style
+            user_msg, context, self.explanation_style, i18n.current_language
         )
         self.messages.append({"role": "assistant", "content": response_text})
         self.is_loading = False
