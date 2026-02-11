@@ -67,6 +67,7 @@ def nav_item(item: dict[str, str]) -> rx.Component:
 
 
 from app.states.user_stats import UserStatsState
+from app.states.auth import AuthState
 
 
 def sidebar() -> rx.Component:
@@ -110,14 +111,15 @@ def sidebar() -> rx.Component:
                 rx.el.div(
                     rx.el.div(
                         rx.image(
-                            src="https://api.dicebear.com/9.x/notionists/svg?seed=Felix",
+                            src=AuthState.current_user_picture,
+                            fallback_src="https://api.dicebear.com/9.x/notionists/svg?seed=Felix",
                             class_name="h-10 w-10 rounded-full bg-slate-700",
                         ),
                         rx.el.div(
                             rx.el.div(
                                 rx.el.p(
-                                    "Alex Rivera",
-                                    class_name="text-sm font-semibold text-white",
+                                    AuthState.current_user_name,
+                                    class_name="text-sm font-semibold text-white truncate max-w-[100px]",
                                 ),
                                 rx.el.div(
                                     rx.icon(
@@ -135,7 +137,7 @@ def sidebar() -> rx.Component:
                                 UserStatsState.level_name,
                                 class_name="text-[10px] text-indigo-400 font-bold uppercase tracking-wider",
                             ),
-                            class_name="flex flex-col flex-1",
+                            class_name="flex flex-col flex-1 min-w-0",
                         ),
                         class_name="flex items-center gap-3 p-3 bg-slate-800/40 rounded-2xl border border-slate-700/30",
                     ),
@@ -147,6 +149,12 @@ def sidebar() -> rx.Component:
                         class_name="w-full h-1 bg-slate-700 mt-2 rounded-full overflow-hidden",
                     ),
                     class_name="flex flex-col",
+                ),
+                rx.el.button(
+                    rx.icon("log-out", class_name="h-4 w-4 mr-2"),
+                    "Sign Out",
+                    on_click=AuthState.logout,
+                    class_name="flex items-center justify-center w-full mt-4 py-2 text-xs font-medium text-slate-500 hover:text-white hover:bg-slate-800 rounded-lg transition-colors",
                 ),
                 class_name="mt-auto pt-6",
             ),
