@@ -23,12 +23,20 @@ def _extract_json_from_text(text: str) -> str:
     return cleaned
 
 
-async def generate_course_curriculum(topic: str, skill_level: str) -> list[dict]:
+def _get_lang_name(code: str) -> str:
+    mapping = {"en": "English", "es": "Spanish (Español)"}
+    return mapping.get(code, "English")
+
+
+async def generate_course_curriculum(
+    topic: str, skill_level: str, language: str = "en"
+) -> list[dict]:
     """
     Generates a list of course modules based on the topic and skill level.
     Returns a list of dictionaries with keys: id, title, description, status, progress.
     """
-    prompt = f"\n    Create a structured course curriculum for learning '{topic}' at a '{skill_level}' level.\n    The response must be a JSON object with a key 'modules' containing an array of exactly 6 module objects.\n    The first module should be 'completed' with 100% progress.\n    The second module should be 'active' with 0% progress.\n    The rest should be 'locked' with 0% progress.\n\n    Each module object must have:\n    - id: string (m1, m2, etc)\n    - title: string\n    - description: string (short, 1-2 sentences)\n    - status: string ('completed', 'active', or 'locked')\n    - progress: integer (0-100)\n    "
+    lang_name = _get_lang_name(language)
+    prompt = f"\n    Create a structured course curriculum for learning '{topic}' at a '{skill_level}' level.\n    Generate all content in {lang_name}. The module titles and descriptions must be in {lang_name}.\n    The response must be a JSON object with a key 'modules' containing an array of exactly 6 module objects.\n    The first module should be 'completed' with 100% progress.\n    The second module should be 'active' with 0% progress.\n    The rest should be 'locked' with 0% progress.\n\n    Each module object must have:\n    - id: string (m1, m2, etc)\n    - title: string\n    - description: string (short, 1-2 sentences)\n    - status: string ('completed', 'active', or 'locked')\n    - progress: integer (0-100)\n    "
     raw_content = ""
     try:
         response = await client.chat.completions.create(
@@ -74,7 +82,9 @@ async def generate_course_curriculum(topic: str, skill_level: str) -> list[dict]
         ]
 
 
-async def generate_module_content(topic: str, module_title: str) -> dict:
+async def generate_module_content(
+    topic: str, module_title: str, language: str = "en"
+) -> dict:
     """
     Generates detailed content for a specific module, including:
     - Educational content (markdown)
@@ -88,7 +98,8 @@ async def generate_module_content(topic: str, module_title: str) -> dict:
     - flashcards: array of exactly 10 objects [{"id": "f1", "front": "Term/Concept", "back": "Definition/Translation"}]
     - quiz_questions: array of exactly 10 objects [{"id": "q1", "question": "Question text", "difficulty": "easy/medium/hard", "explanation": "Brief explanation of the correct answer", "options": [{"id": "a", "text": "Option text"}], "correct_id": "a"}]
     """
-    prompt = f"Generate detailed educational content and interactive activities for the module '{module_title}' within the topic '{topic}'. The response must be a JSON object with keys: 'content', 'exercises', 'flashcards', and 'quiz_questions'."
+    lang_name = _get_lang_name(language)
+    prompt = f"Generate detailed educational content and interactive activities for the module '{module_title}' within the topic '{topic}'. Generate all content in {lang_name}. The module explanation, quiz questions, flashcards, and exercises must all be in {lang_name}. The response must be a JSON object with keys: 'content', 'exercises', 'flashcards', and 'quiz_questions'."
     raw_content = ""
     try:
         response = await client.chat.completions.create(
