@@ -1,6 +1,7 @@
 import reflex as rx
 from typing import TypedDict
 from app.services.ai_generator import generate_module_content
+from app.states.i18n import I18nState
 import logging
 
 
@@ -155,7 +156,10 @@ if __name__ == "__main__":
         self.is_flashcard_flipped = False
         yield
         try:
-            generated_data = await generate_module_content(topic, module_title)
+            i18n = await self.get_state(I18nState)
+            generated_data = await generate_module_content(
+                topic, module_title, i18n.current_language
+            )
             self.current_module_data = {
                 "id": module_id,
                 "title": module_title,
