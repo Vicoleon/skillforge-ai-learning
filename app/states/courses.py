@@ -15,6 +15,15 @@ class CourseState(rx.State):
     course_topic: str = ""
     course_title: str = "Introduction to Systems Programming"
     course_description: str = "Master the fundamentals of low-level programming, memory management, and concurrency using Rust and C++."
+    current_level: str = "Beginner"
+    level_progression: list[str] = [
+        "Beginner",
+        "Intermediate",
+        "Advanced",
+        "Expert",
+        "Master",
+    ]
+    show_level_up_modal: bool = False
     modules: list[ModuleInfo] = [
         {
             "id": "m1",
@@ -75,6 +84,22 @@ class CourseState(rx.State):
         total_progress = sum((m["progress"] for m in self.modules))
         return int(total_progress / len(self.modules))
 
+    @rx.var
+    def is_course_complete(self) -> bool:
+        if not self.modules:
+            return False
+        return all((m["status"] == "completed" for m in self.modules))
+
+    @rx.var
+    def next_level_label(self) -> str:
+        try:
+            idx = self.level_progression.index(self.current_level)
+            if idx + 1 < len(self.level_progression):
+                return self.level_progression[idx + 1]
+            return "Grandmaster"
+        except ValueError:
+            return "Intermediate"
+
     @rx.event
     async def action_module(self, module_id: str, status: str):
         if status == "locked":
@@ -108,3 +133,36 @@ class CourseState(rx.State):
                     if self.modules[i + 1]["status"] == "locked":
                         self.modules[i + 1]["status"] = "active"
                 break
+
+    @rx.event
+    def check_course_completion(self):
+        if self.is_course_complete:
+            self.show_level_up_modal = True
+
+    @rx.event
+    async def start_level_up(self):
+        self.show_level_up_modal = False
+        from app.states.diagnostic import DiagnosticState
+        from app.states.i18n import I18nState
+        from app.states.navigation import NavState
+
+        diagnostic = await self.get_state(DiagnosticState)
+        i18n = await self.get_state(I18nState)
+        nav = await self.get_state(NavState)
+        yield DiagnosticState.start_level_up_diagnostic(
+            self.course_topic,
+            self.current_level,
+            CourseState.next_level_label,
+            i18n.current_language,
+        )
+        nav.current_page = "diagnostic"
+
+    @rx.event
+    def advance_to_next_level(self):
+        try:
+            idx = self.level_progression.index(self.current_level)
+            if idx + 1 < len(self.level_progression):
+                self.current_level = self.level_progression[idx + 1]
+        except ValueError:
+            pass
+        self.show_level_up_modal = False
