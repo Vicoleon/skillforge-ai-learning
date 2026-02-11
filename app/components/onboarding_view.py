@@ -46,7 +46,7 @@ def landing_page() -> rx.Component:
                     I18nState.translations[I18nState.current_language][
                         "landing.hero_title"
                     ],
-                    class_name="text-5xl md:text-6xl font-black text-white mb-6 leading-tight tracking-tight",
+                    class_name="text-5xl md:text-7xl font-black text-white mb-6 leading-tight tracking-tight",
                 ),
                 rx.el.p(
                     I18nState.translations[I18nState.current_language][
@@ -94,11 +94,11 @@ def landing_page() -> rx.Component:
                         "landing.feature_progress_desc"
                     ],
                 ),
-                class_name="grid grid-cols-1 md:grid-cols-2 gap-4 w-full mt-12 mb-20",
+                class_name="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full mt-12 mb-20",
             ),
-            class_name="max-w-5xl mx-auto px-6 pt-20",
+            class_name="max-w-7xl mx-auto px-6 pt-20 w-full",
         ),
-        class_name="min-h-screen bg-slate-950 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-900/20 via-slate-950 to-slate-950",
+        class_name="min-h-screen w-full bg-slate-950 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-900/20 via-slate-950 to-slate-950",
     )
 
 
