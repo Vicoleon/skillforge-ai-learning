@@ -1,6 +1,69 @@
 import reflex as rx
+from reflex_google_auth import google_login
 from app.states.onboarding import OnboardingState
 from app.states.i18n import I18nState
+from app.states.auth import AuthState
+
+
+def feature_card(icon: str, title: str, desc: str) -> rx.Component:
+    return rx.el.div(
+        rx.icon(icon, class_name="h-8 w-8 text-indigo-500 mb-4"),
+        rx.el.h3(title, class_name="text-lg font-bold text-white mb-2"),
+        rx.el.p(desc, class_name="text-sm text-slate-400"),
+        class_name="p-6 bg-slate-900/50 border border-slate-800 rounded-2xl hover:border-indigo-500/30 transition-all",
+    )
+
+
+def landing_page() -> rx.Component:
+    return rx.el.div(
+        rx.el.div(
+            rx.el.div(
+                rx.el.div(
+                    rx.icon("zap", class_name="h-12 w-12 text-indigo-500"),
+                    rx.el.h1(
+                        "SkillForge",
+                        class_name="text-2xl font-bold tracking-tight text-white",
+                    ),
+                    class_name="flex items-center gap-4 mb-8",
+                ),
+                rx.el.h2(
+                    "Master Any Skill with AI-Powered Learning",
+                    class_name="text-5xl md:text-6xl font-black text-white mb-6 leading-tight tracking-tight",
+                ),
+                rx.el.p(
+                    "Personalized curriculum, adaptive quizzes, and an always-available AI tutor. Start your learning journey today.",
+                    class_name="text-xl text-slate-400 mb-10 max-w-2xl",
+                ),
+                rx.el.div(google_login(), class_name="transform scale-110 origin-left"),
+                class_name="flex flex-col justify-center min-h-[60vh]",
+            ),
+            rx.el.div(
+                feature_card(
+                    "brain-circuit",
+                    "Adaptive Learning",
+                    "Curriculum that evolves with your skills and fills knowledge gaps.",
+                ),
+                feature_card(
+                    "message-circle",
+                    "AI Tutor",
+                    "Get instant, context-aware help whenever you get stuck.",
+                ),
+                feature_card(
+                    "target",
+                    "Smart Quizzes",
+                    "Dynamic difficulty adjustment to keep you challenged.",
+                ),
+                feature_card(
+                    "bar-chart-2",
+                    "Progress Tracking",
+                    "Visual analytics to track your streak, XP, and mastery.",
+                ),
+                class_name="grid grid-cols-1 md:grid-cols-2 gap-4 w-full mt-12 mb-20",
+            ),
+            class_name="max-w-5xl mx-auto px-6 pt-20",
+        ),
+        class_name="min-h-screen bg-slate-950 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-900/20 via-slate-950 to-slate-950",
+    )
 
 
 def diagnostic_chat() -> rx.Component:
@@ -62,84 +125,91 @@ def diagnostic_chat() -> rx.Component:
 
 
 def onboarding_view() -> rx.Component:
-    return rx.el.div(
+    return rx.cond(
+        AuthState.is_authenticated,
         rx.el.div(
             rx.el.div(
-                rx.el.h2(
-                    I18nState.translations[I18nState.current_language][
-                        "onboarding.title"
-                    ],
-                    class_name="text-4xl md:text-5xl font-bold text-white mb-8 text-center tracking-tight",
-                ),
-                rx.el.form(
-                    rx.el.div(
-                        rx.el.div(
-                            rx.icon(
-                                "search",
-                                class_name="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 h-6 w-6",
-                            ),
-                            rx.el.input(
-                                name="search_query",
-                                placeholder=I18nState.translations[
-                                    I18nState.current_language
-                                ]["onboarding.placeholder"],
-                                class_name="w-full bg-slate-800/50 border border-slate-700 text-white py-5 pl-16 pr-6 rounded-3xl focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 outline-none transition-all placeholder:text-slate-500 text-lg shadow-2xl",
-                                default_value=OnboardingState.search_query,
-                                key=OnboardingState.search_query,
-                            ),
-                            class_name="relative flex-1",
-                        ),
-                        rx.el.button(
-                            rx.cond(
-                                OnboardingState.is_processing,
-                                rx.icon(
-                                    "squirrel",
-                                    class_name="h-6 w-6 animate-spin text-white",
-                                ),
-                                rx.icon("arrow-right", class_name="h-6 w-6 text-white"),
-                            ),
-                            type="submit",
-                            disabled=OnboardingState.is_processing,
-                            class_name="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 p-5 rounded-3xl transition-all shadow-lg hover:shadow-indigo-500/20 disabled:opacity-50",
-                        ),
-                        class_name="flex w-full max-w-3xl gap-4",
-                    ),
-                    on_submit=OnboardingState.submit_topic,
-                    class_name="w-full flex justify-center",
-                ),
-                class_name=rx.cond(
-                    OnboardingState.is_diagnostic_shown,
-                    "opacity-40 scale-95 blur-[2px] pointer-events-none transition-all duration-700",
-                    "transition-all duration-700",
-                ),
-            ),
-            rx.cond(
-                OnboardingState.is_diagnostic_shown & ~OnboardingState.is_processing,
-                diagnostic_chat(),
-            ),
-            rx.cond(
-                OnboardingState.is_diagnostic_shown & OnboardingState.is_processing,
                 rx.el.div(
-                    rx.icon(
-                        "squirrel",
-                        class_name="h-12 w-12 text-indigo-500 animate-spin mb-4",
-                    ),
-                    rx.el.h3(
+                    rx.el.h2(
                         I18nState.translations[I18nState.current_language][
-                            "onboarding.preparing"
+                            "onboarding.title"
                         ],
-                        class_name="text-xl font-semibold text-white animate-pulse",
+                        class_name="text-4xl md:text-5xl font-bold text-white mb-8 text-center tracking-tight",
                     ),
-                    rx.el.p(
-                        I18nState.translations[I18nState.current_language][
-                            "onboarding.generating_questions"
-                        ].replace("{topic}", OnboardingState.search_query),
-                        class_name="text-slate-500 mt-2",
+                    rx.el.form(
+                        rx.el.div(
+                            rx.el.div(
+                                rx.icon(
+                                    "search",
+                                    class_name="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 h-6 w-6",
+                                ),
+                                rx.el.input(
+                                    name="search_query",
+                                    placeholder=I18nState.translations[
+                                        I18nState.current_language
+                                    ]["onboarding.placeholder"],
+                                    class_name="w-full bg-slate-800/50 border border-slate-700 text-white py-5 pl-16 pr-6 rounded-3xl focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 outline-none transition-all placeholder:text-slate-500 text-lg shadow-2xl",
+                                    default_value=OnboardingState.search_query,
+                                    key=OnboardingState.search_query,
+                                ),
+                                class_name="relative flex-1",
+                            ),
+                            rx.el.button(
+                                rx.cond(
+                                    OnboardingState.is_processing,
+                                    rx.icon(
+                                        "squirrel",
+                                        class_name="h-6 w-6 animate-spin text-white",
+                                    ),
+                                    rx.icon(
+                                        "arrow-right", class_name="h-6 w-6 text-white"
+                                    ),
+                                ),
+                                type="submit",
+                                disabled=OnboardingState.is_processing,
+                                class_name="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 p-5 rounded-3xl transition-all shadow-lg hover:shadow-indigo-500/20 disabled:opacity-50",
+                            ),
+                            class_name="flex w-full max-w-3xl gap-4",
+                        ),
+                        on_submit=OnboardingState.submit_topic,
+                        class_name="w-full flex justify-center",
                     ),
-                    class_name="flex flex-col items-center justify-center mt-12 animate-in fade-in duration-500",
+                    class_name=rx.cond(
+                        OnboardingState.is_diagnostic_shown,
+                        "opacity-40 scale-95 blur-[2px] pointer-events-none transition-all duration-700",
+                        "transition-all duration-700",
+                    ),
                 ),
+                rx.cond(
+                    OnboardingState.is_diagnostic_shown
+                    & ~OnboardingState.is_processing,
+                    diagnostic_chat(),
+                ),
+                rx.cond(
+                    OnboardingState.is_diagnostic_shown & OnboardingState.is_processing,
+                    rx.el.div(
+                        rx.icon(
+                            "squirrel",
+                            class_name="h-12 w-12 text-indigo-500 animate-spin mb-4",
+                        ),
+                        rx.el.h3(
+                            I18nState.translations[I18nState.current_language][
+                                "onboarding.preparing"
+                            ],
+                            class_name="text-xl font-semibold text-white animate-pulse",
+                        ),
+                        rx.el.p(
+                            I18nState.translations[I18nState.current_language][
+                                "onboarding.generating_questions"
+                            ].replace("{topic}", OnboardingState.search_query),
+                            class_name="text-slate-500 mt-2",
+                        ),
+                        class_name="flex flex-col items-center justify-center mt-12 animate-in fade-in duration-500",
+                    ),
+                ),
+                class_name="flex flex-col items-center justify-center min-h-[80vh] w-full",
             ),
-            class_name="flex flex-col items-center justify-center min-h-[80vh] w-full",
+            class_name="max-w-5xl mx-auto w-full px-4 pt-12",
         ),
-        class_name="max-w-5xl mx-auto w-full px-4 pt-12",
+        landing_page(),
     )
