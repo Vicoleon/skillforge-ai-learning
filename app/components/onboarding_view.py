@@ -19,19 +19,39 @@ def landing_page() -> rx.Component:
         rx.el.div(
             rx.el.div(
                 rx.el.div(
-                    rx.icon("zap", class_name="h-12 w-12 text-indigo-500"),
-                    rx.el.h1(
-                        "SkillForge",
-                        class_name="text-2xl font-bold tracking-tight text-white",
+                    rx.el.div(
+                        rx.icon("zap", class_name="h-12 w-12 text-indigo-500"),
+                        rx.el.h1(
+                            "SkillForge",
+                            class_name="text-2xl font-bold tracking-tight text-white",
+                        ),
+                        class_name="flex items-center gap-4",
                     ),
-                    class_name="flex items-center gap-4 mb-8",
+                    rx.el.button(
+                        rx.el.span(I18nState.current_flag, class_name="text-xl mr-2"),
+                        rx.el.span(
+                            rx.cond(I18nState.current_language == "en", "ES", "EN"),
+                            class_name="text-xs font-bold text-slate-400",
+                        ),
+                        on_click=rx.cond(
+                            I18nState.current_language == "en",
+                            I18nState.set_language("es"),
+                            I18nState.set_language("en"),
+                        ),
+                        class_name="p-3 hover:bg-slate-800 rounded-2xl transition-all border border-slate-800 flex items-center bg-slate-900/50",
+                    ),
+                    class_name="flex items-center justify-between mb-8",
                 ),
                 rx.el.h2(
-                    "Master Any Skill with AI-Powered Learning",
+                    I18nState.translations[I18nState.current_language][
+                        "landing.hero_title"
+                    ],
                     class_name="text-5xl md:text-6xl font-black text-white mb-6 leading-tight tracking-tight",
                 ),
                 rx.el.p(
-                    "Personalized curriculum, adaptive quizzes, and an always-available AI tutor. Start your learning journey today.",
+                    I18nState.translations[I18nState.current_language][
+                        "landing.hero_subtitle"
+                    ],
                     class_name="text-xl text-slate-400 mb-10 max-w-2xl",
                 ),
                 rx.el.div(google_login(), class_name="transform scale-110 origin-left"),
@@ -40,23 +60,39 @@ def landing_page() -> rx.Component:
             rx.el.div(
                 feature_card(
                     "brain-circuit",
-                    "Adaptive Learning",
-                    "Curriculum that evolves with your skills and fills knowledge gaps.",
+                    I18nState.translations[I18nState.current_language][
+                        "landing.feature_adaptive_title"
+                    ],
+                    I18nState.translations[I18nState.current_language][
+                        "landing.feature_adaptive_desc"
+                    ],
                 ),
                 feature_card(
                     "message-circle",
-                    "AI Tutor",
-                    "Get instant, context-aware help whenever you get stuck.",
+                    I18nState.translations[I18nState.current_language][
+                        "landing.feature_tutor_title"
+                    ],
+                    I18nState.translations[I18nState.current_language][
+                        "landing.feature_tutor_desc"
+                    ],
                 ),
                 feature_card(
                     "target",
-                    "Smart Quizzes",
-                    "Dynamic difficulty adjustment to keep you challenged.",
+                    I18nState.translations[I18nState.current_language][
+                        "landing.feature_quiz_title"
+                    ],
+                    I18nState.translations[I18nState.current_language][
+                        "landing.feature_quiz_desc"
+                    ],
                 ),
                 feature_card(
                     "bar-chart-2",
-                    "Progress Tracking",
-                    "Visual analytics to track your streak, XP, and mastery.",
+                    I18nState.translations[I18nState.current_language][
+                        "landing.feature_progress_title"
+                    ],
+                    I18nState.translations[I18nState.current_language][
+                        "landing.feature_progress_desc"
+                    ],
                 ),
                 class_name="grid grid-cols-1 md:grid-cols-2 gap-4 w-full mt-12 mb-20",
             ),
