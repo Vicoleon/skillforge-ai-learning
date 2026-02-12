@@ -8,11 +8,11 @@ def tab_button(label: str, tab_id: str) -> rx.Component:
     is_active = LabState.active_tab == tab_id
     return rx.el.button(
         label,
-        on_click=lambda: LabState.set_active_tab(tab_id),
+        on_click=LabState.set_active_tab(tab_id),
         class_name=rx.cond(
             is_active,
-            "px-4 py-2 text-sm font-semibold text-indigo-400 border-b-2 border-indigo-500 transition-all",
-            "px-4 py-2 text-sm font-medium text-slate-500 hover:text-slate-300 transition-all",
+            "px-4 py-2 min-h-[48px] text-sm font-semibold text-indigo-400 border-b-2 border-indigo-500 transition-all cursor-pointer touch-manipulation",
+            "px-4 py-2 min-h-[48px] text-sm font-medium text-slate-500 hover:text-slate-300 transition-all cursor-pointer touch-manipulation",
         ),
     )
 
@@ -279,9 +279,9 @@ def quiz_option(opt: dict) -> rx.Component:
                 rx.fragment(),
             ),
         ),
-        on_click=lambda: LabState.select_quiz_answer(opt["id"]),
+        on_click=LabState.select_quiz_answer(opt["id"]),
         disabled=is_submitted,
-        class_name=f"w-full flex items-center justify-between p-5 rounded-2xl border {border_color} {bg_color} transition-all hover:scale-[1.01] active:scale-95 disabled:hover:scale-100",
+        class_name=f"w-full min-h-[64px] flex items-center justify-between p-5 rounded-2xl border {border_color} {bg_color} transition-all hover:scale-[1.01] active:scale-95 disabled:hover:scale-100 cursor-pointer touch-manipulation",
     )
 
 
