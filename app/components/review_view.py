@@ -5,8 +5,8 @@ from app.states.review import ReviewState
 def rating_button(label: str, color: str, quality: int) -> rx.Component:
     return rx.el.button(
         label,
-        on_click=lambda: ReviewState.complete_review(quality),
-        class_name=f"flex-1 py-3 {color} text-white rounded-xl font-bold text-sm transition-all hover:scale-105 active:scale-95",
+        on_click=ReviewState.complete_review(quality),
+        class_name=f"flex-1 min-h-[52px] py-3 {color} text-white rounded-xl font-bold text-sm transition-all hover:scale-105 active:scale-95 cursor-pointer touch-manipulation",
     )
 
 
@@ -83,7 +83,7 @@ def dashboard_view() -> rx.Component:
                         "Start Review Session",
                         rx.icon("play", class_name="h-4 w-4 ml-2"),
                         on_click=ReviewState.start_session,
-                        class_name="px-10 py-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl font-bold shadow-xl shadow-indigo-600/20 transition-all flex items-center",
+                        class_name="px-10 min-h-[56px] py-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl font-bold shadow-xl shadow-indigo-600/20 transition-all flex items-center cursor-pointer touch-manipulation",
                     ),
                     rx.el.div(
                         rx.el.span("🎉", class_name="text-4xl block mb-4"),
