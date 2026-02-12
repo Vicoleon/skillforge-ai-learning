@@ -25,10 +25,10 @@ def question_card() -> rx.Component:
                             rx.el.span(
                                 opt["text"], class_name="text-slate-200 font-medium"
                             ),
-                            class_name="flex items-center",
+                            class_name="flex items-center w-full",
                         ),
                         on_click=DiagnosticState.answer_question(opt["id"]),
-                        class_name="group w-full p-4 bg-slate-900/50 hover:bg-slate-800 border border-slate-800 hover:border-indigo-500/50 rounded-2xl transition-all text-left flex items-center",
+                        class_name="group w-full min-h-[56px] p-5 bg-slate-900/50 hover:bg-slate-800 border border-slate-800 hover:border-indigo-500/50 rounded-2xl transition-all text-left flex items-center cursor-pointer touch-manipulation",
                     ),
                 ),
                 class_name="flex flex-col gap-3",
@@ -112,7 +112,7 @@ def results_view() -> rx.Component:
                 rx.icon("arrow-right", class_name="h-4 w-4 ml-2"),
                 on_click=DiagnosticState.generate_personalized_path,
                 disabled=DiagnosticState.is_loading,
-                class_name="w-full py-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold tracking-wide transition-all shadow-lg shadow-indigo-600/20 flex items-center justify-center",
+                class_name="w-full min-h-[56px] py-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold tracking-wide transition-all shadow-lg shadow-indigo-600/20 flex items-center justify-center cursor-pointer touch-manipulation",
             ),
             class_name="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl max-w-lg w-full mx-auto animate-in zoom-in-95 duration-500",
         ),
