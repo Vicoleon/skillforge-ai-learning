@@ -27,7 +27,7 @@ def question_card() -> rx.Component:
                             ),
                             class_name="flex items-center",
                         ),
-                        on_click=lambda: DiagnosticState.answer_question(opt["id"]),
+                        on_click=DiagnosticState.answer_question(opt["id"]),
                         class_name="group w-full p-4 bg-slate-900/50 hover:bg-slate-800 border border-slate-800 hover:border-indigo-500/50 rounded-2xl transition-all text-left flex items-center",
                     ),
                 ),
