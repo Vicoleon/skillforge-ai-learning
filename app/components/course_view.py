@@ -214,18 +214,18 @@ def module_card(module: dict) -> rx.Component:
                         "course.start_learning"
                     ],
                 ),
-                on_click=lambda: CourseState.action_module(module["id"], status),
+                on_click=CourseState.action_module(module["id"], status),
                 class_name=rx.match(
                     status,
                     (
                         "completed",
-                        "w-full py-3 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 rounded-xl border border-emerald-500/20 transition-all font-semibold text-sm",
+                        "w-full min-h-[48px] py-3 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 rounded-xl border border-emerald-500/20 transition-all font-semibold text-sm cursor-pointer touch-manipulation",
                     ),
                     (
                         "locked",
-                        "w-full py-3 bg-slate-800/50 text-slate-600 rounded-xl border border-slate-800 transition-all font-semibold text-sm cursor-not-allowed",
+                        "w-full min-h-[48px] py-3 bg-slate-800/50 text-slate-600 rounded-xl border border-slate-800 transition-all font-semibold text-sm cursor-not-allowed touch-manipulation",
                     ),
-                    "w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl shadow-lg shadow-indigo-600/20 transition-all font-semibold text-sm",
+                    "w-full min-h-[48px] py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl shadow-lg shadow-indigo-600/20 transition-all font-semibold text-sm cursor-pointer touch-manipulation",
                 ),
             ),
             class_name="flex flex-col h-full",
