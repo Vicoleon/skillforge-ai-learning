@@ -166,86 +166,91 @@ def onboarding_view() -> rx.Component:
         rx.el.div(
             rx.el.div(
                 rx.el.div(
-                    rx.el.h2(
-                        I18nState.translations[I18nState.current_language][
-                            "onboarding.title"
-                        ],
-                        class_name="text-4xl md:text-5xl font-bold text-white mb-8 text-center tracking-tight",
-                    ),
-                    rx.el.form(
-                        rx.el.div(
-                            rx.el.div(
-                                rx.icon(
-                                    "search",
-                                    class_name="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 h-6 w-6",
-                                ),
-                                rx.el.input(
-                                    name="search_query",
-                                    placeholder=I18nState.translations[
-                                        I18nState.current_language
-                                    ]["onboarding.placeholder"],
-                                    class_name="w-full bg-slate-800/50 border border-slate-700 text-white py-5 pl-16 pr-6 rounded-3xl focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 outline-none transition-all placeholder:text-slate-500 text-lg shadow-2xl",
-                                    default_value=OnboardingState.search_query,
-                                    key=OnboardingState.search_query,
-                                ),
-                                class_name="relative flex-1",
-                            ),
-                            rx.el.button(
-                                rx.cond(
-                                    OnboardingState.is_processing,
-                                    rx.icon(
-                                        "squirrel",
-                                        class_name="h-6 w-6 animate-spin text-white",
-                                    ),
-                                    rx.icon(
-                                        "arrow-right", class_name="h-6 w-6 text-white"
-                                    ),
-                                ),
-                                type="submit",
-                                disabled=OnboardingState.is_processing,
-                                class_name="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 p-5 rounded-3xl transition-all shadow-lg hover:shadow-indigo-500/20 disabled:opacity-50",
-                            ),
-                            class_name="flex w-full max-w-3xl gap-4",
-                        ),
-                        on_submit=OnboardingState.submit_topic,
-                        class_name="w-full flex justify-center",
-                    ),
-                    class_name=rx.cond(
-                        OnboardingState.is_diagnostic_shown,
-                        "opacity-40 scale-95 blur-[2px] pointer-events-none transition-all duration-700",
-                        "transition-all duration-700",
-                    ),
-                ),
-                rx.cond(
-                    OnboardingState.is_diagnostic_shown
-                    & ~OnboardingState.is_processing,
-                    diagnostic_chat(),
-                ),
-                rx.cond(
-                    OnboardingState.is_diagnostic_shown & OnboardingState.is_processing,
                     rx.el.div(
-                        rx.icon(
-                            "squirrel",
-                            class_name="h-12 w-12 text-indigo-500 animate-spin mb-4",
-                        ),
-                        rx.el.h3(
+                        rx.el.h2(
                             I18nState.translations[I18nState.current_language][
-                                "onboarding.preparing"
+                                "onboarding.title"
                             ],
-                            class_name="text-xl font-semibold text-white animate-pulse",
+                            class_name="text-4xl md:text-5xl font-bold text-white mb-8 text-center tracking-tight",
                         ),
-                        rx.el.p(
-                            I18nState.translations[I18nState.current_language][
-                                "onboarding.generating_questions"
-                            ].replace("{topic}", OnboardingState.search_query),
-                            class_name="text-slate-500 mt-2",
+                        rx.el.form(
+                            rx.el.div(
+                                rx.el.div(
+                                    rx.icon(
+                                        "search",
+                                        class_name="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 h-6 w-6",
+                                    ),
+                                    rx.el.input(
+                                        name="search_query",
+                                        placeholder=I18nState.translations[
+                                            I18nState.current_language
+                                        ]["onboarding.placeholder"],
+                                        class_name="w-full bg-slate-800/50 border border-slate-700 text-white py-5 pl-16 pr-6 rounded-3xl focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 outline-none transition-all placeholder:text-slate-500 text-lg shadow-2xl",
+                                        default_value=OnboardingState.search_query,
+                                        key=OnboardingState.search_query,
+                                    ),
+                                    class_name="relative flex-1",
+                                ),
+                                rx.el.button(
+                                    rx.cond(
+                                        OnboardingState.is_processing,
+                                        rx.icon(
+                                            "squirrel",
+                                            class_name="h-6 w-6 animate-spin text-white",
+                                        ),
+                                        rx.icon(
+                                            "arrow-right",
+                                            class_name="h-6 w-6 text-white",
+                                        ),
+                                    ),
+                                    type="submit",
+                                    disabled=OnboardingState.is_processing,
+                                    class_name="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 p-5 rounded-3xl transition-all shadow-lg hover:shadow-indigo-500/20 disabled:opacity-50",
+                                ),
+                                class_name="flex w-full max-w-3xl gap-4",
+                            ),
+                            on_submit=OnboardingState.submit_topic,
+                            class_name="w-full flex justify-center",
                         ),
-                        class_name="flex flex-col items-center justify-center mt-12 animate-in fade-in duration-500",
+                        class_name=rx.cond(
+                            OnboardingState.is_diagnostic_shown,
+                            "opacity-40 scale-95 blur-[2px] pointer-events-none transition-all duration-700",
+                            "transition-all duration-700",
+                        ),
                     ),
+                    rx.cond(
+                        OnboardingState.is_diagnostic_shown
+                        & ~OnboardingState.is_processing,
+                        diagnostic_chat(),
+                    ),
+                    rx.cond(
+                        OnboardingState.is_diagnostic_shown
+                        & OnboardingState.is_processing,
+                        rx.el.div(
+                            rx.icon(
+                                "squirrel",
+                                class_name="h-12 w-12 text-indigo-500 animate-spin mb-4",
+                            ),
+                            rx.el.h3(
+                                I18nState.translations[I18nState.current_language][
+                                    "onboarding.preparing"
+                                ],
+                                class_name="text-xl font-semibold text-white animate-pulse",
+                            ),
+                            rx.el.p(
+                                I18nState.translations[I18nState.current_language][
+                                    "onboarding.generating_questions"
+                                ].replace("{topic}", OnboardingState.search_query),
+                                class_name="text-slate-500 mt-2",
+                            ),
+                            class_name="flex flex-col items-center justify-center mt-12 animate-in fade-in duration-500",
+                        ),
+                    ),
+                    class_name="flex flex-col items-center justify-center min-h-[80vh] w-full",
                 ),
-                class_name="flex flex-col items-center justify-center min-h-[80vh] w-full",
+                class_name="max-w-5xl mx-auto w-full px-4 pt-12",
             ),
-            class_name="max-w-5xl mx-auto w-full px-4 pt-12",
+            class_name="w-full h-full",
         ),
         landing_page(),
     )
