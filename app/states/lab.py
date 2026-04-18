@@ -389,17 +389,23 @@ if __name__ == "__main__":
     async def next_module(self):
         from app.states.courses import CourseState
         from app.states.user_stats import UserStatsState
+        from app.states.navigation import NavState
 
         stats = await self.get_state(UserStatsState)
-        yield stats.complete_lesson()
+        yield stats.complete_lesson
         courses = await self.get_state(CourseState)
+        nav = await self.get_state(NavState)
         current_idx = -1
         for i, m in enumerate(courses.modules):
             if m["id"] == self.current_module_id:
                 current_idx = i
                 break
         if current_idx != -1:
-            courses.mark_module_completed(self.current_module_id)
+            courses.modules[current_idx]["status"] = "completed"
+            courses.modules[current_idx]["progress"] = 100
+            if current_idx + 1 < len(courses.modules):
+                if courses.modules[current_idx + 1]["status"] == "locked":
+                    courses.modules[current_idx + 1]["status"] = "active"
             if current_idx + 1 < len(courses.modules):
                 next_m = courses.modules[current_idx + 1]
                 async for update in self.load_module_content(
@@ -407,10 +413,9 @@ if __name__ == "__main__":
                 ):
                     yield update
             else:
-                courses.check_course_completion()
-                from app.states.navigation import NavState
-
-                nav = await self.get_state(NavState)
+                is_complete = all((m["status"] == "completed" for m in courses.modules))
+                if is_complete:
+                    courses.show_level_up_modal = True
                 nav.current_page = "courses"
 
     @rx.event
