@@ -2,8 +2,12 @@ import os
 import logging
 from openai import AsyncOpenAI
 
-client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 MODEL = "gpt-4o-mini"
+
+
+def _get_client() -> AsyncOpenAI:
+    """Lazily initialize the OpenAI client."""
+    return AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 
 async def generate_tutor_response(
@@ -12,6 +16,7 @@ async def generate_tutor_response(
     """
     Generates a contextual response from the AI Tutor based on the user's current learning state.
     """
+    client = _get_client()
     lang_name = "English" if language == "en" else "Spanish (Español)"
     style_instructions = {
         "simple": "Explain simply, like I am a beginner. Avoid complex jargon. Use analogies.",
