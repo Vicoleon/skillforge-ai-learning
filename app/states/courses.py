@@ -136,7 +136,7 @@ class CourseState(rx.State):
         from app.states.auth import AuthState
 
         auth = await self.get_state(AuthState)
-        yield AuthState.save_user_progress
+        yield auth.save_user_progress
 
     @rx.event
     def check_course_completion(self):
