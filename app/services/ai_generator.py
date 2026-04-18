@@ -3,8 +3,12 @@ import json
 import logging
 from openai import AsyncOpenAI
 
-client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 MODEL = "gpt-4o-mini"
+
+
+def _get_client() -> AsyncOpenAI:
+    """Lazily initialize the OpenAI client."""
+    return AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 
 def _extract_json_from_text(text: str) -> str:
@@ -35,6 +39,7 @@ async def generate_course_curriculum(
     Generates a list of course modules based on the topic and skill level.
     Returns a list of dictionaries with keys: id, title, description, status, progress.
     """
+    client = _get_client()
     lang_name = _get_lang_name(language)
     prompt = f"\n    Create a structured course curriculum for learning '{topic}' at a '{skill_level}' level.\n    Generate all content in {lang_name}. The module titles and descriptions must be in {lang_name}.\n    The response must be a JSON object with a key 'modules' containing an array of exactly 6 module objects.\n    The first module should be 'completed' with 100% progress.\n    The second module should be 'active' with 0% progress.\n    The rest should be 'locked' with 0% progress.\n\n    Each module object must have:\n    - id: string (m1, m2, etc)\n    - title: string\n    - description: string (short, 1-2 sentences)\n    - status: string ('completed', 'active', or 'locked')\n    - progress: integer (0-100)\n    "
     raw_content = ""
@@ -98,6 +103,7 @@ async def generate_module_content(
     - flashcards: array of exactly 10 objects [{"id": "f1", "front": "Term/Concept", "back": "Definition/Translation"}]
     - quiz_questions: array of exactly 10 objects [{"id": "q1", "question": "Question text", "difficulty": "easy/medium/hard", "explanation": "Brief explanation of the correct answer", "options": [{"id": "a", "text": "Option text"}], "correct_id": "a"}]
     """
+    client = _get_client()
     lang_name = _get_lang_name(language)
     prompt = f"""\n    Generate detailed educational content and interactive activities for the module '{module_title}' within the topic '{topic}'. \n    Generate all content in {lang_name}. The module explanation, quiz questions, flashcards, and exercises must all be in {lang_name}.\n\n    You MUST return a valid JSON object with exactly these keys and structure:\n\n    {{\n        "content": "...Detailed markdown educational content here (headings, code examples, concepts)...",\n        "exercises": [\n            {{\n                "id": "e1",\n                "prompt": "Write a function that... (or Translate this sentence...)",\n                "expected_answer": "def my_func(): ... (or The translated sentence)"\n            }},\n            ... (generate exactly 10 exercises)\n        ],\n        "flashcards": [\n            {{\n                "id": "f1",\n                "front": "Polymorphism (or Word in target language)",\n                "back": "The ability of different classes to be treated as instances of the same class... (or Definition/Translation)"\n            }},\n            ... (generate exactly 10 flashcards)\n        ],\n        "quiz_questions": [\n            {{\n                "id": "q1",\n                "question": "What is the main difference between Stack and Heap?",\n                "difficulty": "medium",\n                "explanation": "Stack is static memory allocation, while Heap is dynamic...",\n                "options": [\n                    {{"id": "a", "text": "Stack is slower"}},\n                    {{"id": "b", "text": "Heap is static"}},\n                    {{"id": "c", "text": "Stack is static, Heap is dynamic"}},\n                    {{"id": "d", "text": "They are the same"}}\n                ],\n                "correct_id": "c"\n            }},\n            ... (generate exactly 10 quiz questions)\n        ]\n    }}\n\n    IMPORTANT RULES:\n    1. 'exercises': Must be an array of exactly 10 objects with keys 'id', 'prompt', 'expected_answer'.\n    2. 'flashcards': Must be an array of exactly 10 objects with keys 'id', 'front', 'back'.\n    3. 'quiz_questions': Must be an array of exactly 10 objects. Each object must have 'id', 'question', 'difficulty' (easy/medium/hard), 'explanation', 'correct_id', and 'options'.\n    4. 'options' inside 'quiz_questions' must be an array of objects with 'id' and 'text'. Do NOT use simple strings for options.\n    """
     raw_content = ""
