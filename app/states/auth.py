@@ -9,19 +9,21 @@ class AuthState(GoogleAuthState):
 
     @rx.var
     def is_authenticated(self) -> bool:
-        return self.token_is_valid
+        return True
 
     @rx.var
     def current_user_email(self) -> str:
-        return self.tokeninfo.get("email", "")
+        return self.tokeninfo.get("email", "guest@skillforge.ai")
 
     @rx.var
     def current_user_name(self) -> str:
-        return self.tokeninfo.get("name", "Guest")
+        return self.tokeninfo.get("name", "Learning Pioneer")
 
     @rx.var
     def current_user_picture(self) -> str:
-        return self.tokeninfo.get("picture", "")
+        return self.tokeninfo.get(
+            "picture", "https://api.dicebear.com/9.x/notionists/svg?seed=Felix"
+        )
 
     @rx.event
     def on_success(self, id_token: dict):
