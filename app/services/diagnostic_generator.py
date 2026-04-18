@@ -3,8 +3,12 @@ import json
 import logging
 from openai import AsyncOpenAI
 
-client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 MODEL = "gpt-4o-mini"
+
+
+def _get_client() -> AsyncOpenAI:
+    """Lazily initialize the OpenAI client."""
+    return AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 
 def _extract_json_from_text(text: str) -> str:
@@ -36,6 +40,7 @@ async def generate_diagnostic_questions(
     """
     Generates 8 diagnostic questions covering different subtopics for the given main topic.
     """
+    client = _get_client()
     lang_name = _get_lang_name(language)
     prompt = f"\n    Create a diagnostic assessment for the topic '{topic}'.\n    Generate all content in {lang_name}. The questions, options, and explanations must be in {lang_name}.\n    Generate exactly 8 diagnostic questions to assess if this {current_level} learner is ready for {target_level} content in {topic}.\n    Generate questions appropriate for someone transitioning from {current_level} to {target_level}.\n    \n    Return a JSON object with a key 'questions' containing an array of question objects.\n    Each question object must have:\n    - id: string (q1, q2, ...)\n    - question: string (The question text)\n    - subtopic: string (The specific concept being tested, e.g., 'Memory Management', 'Syntax', 'Networking')\n    - difficulty: string ('easy', 'medium', 'hard')\n    - options: array of objects [{{'id': 'a', 'text': 'Option A'}}, {{'id': 'b', 'text': 'Option B'}}, ...]\n    - correct_id: string (The id of the correct option)\n    - explanation: string (Brief explanation of why the answer is correct)\n    "
     try:
@@ -81,6 +86,7 @@ async def analyze_diagnostic_results(
     """
     Analyzes the user's answers to identify strengths, weaknesses, and recommended focus areas.
     """
+    client = _get_client()
     lang_name = _get_lang_name(language)
     analysis_input = {
         "questions": [
@@ -126,6 +132,7 @@ async def generate_adaptive_curriculum(
     """
     Generates a personalized curriculum based on diagnostic analysis.
     """
+    client = _get_client()
     lang_name = _get_lang_name(language)
     strengths = ", ".join(analysis_results.get("strengths", []))
     weaknesses = ", ".join(analysis_results.get("weaknesses", []))
