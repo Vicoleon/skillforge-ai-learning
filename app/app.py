@@ -68,7 +68,4 @@ app = rx.App(
         ),
     ],
 )
-app.add_page(
-    lambda: google_oauth_provider(index(), client_id=os.getenv("GOOGLE_CLIENT_ID", "")),
-    route="/",
-)
+app.add_page(index, route="/")
